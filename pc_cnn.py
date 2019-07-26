@@ -50,11 +50,10 @@ def evaluateModel(individual, dataset):
         model.compile('adam', 'categorical_crossentropy', metrics=['accuracy'])
 
         # train the model using Keras methods
-        # model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=TRAINING_EPOCHS)
+        model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=TRAINING_EPOCHS)
 
         # evaluate the model
-        # loss, acc = model.evaluate(x_test, y_test)
-        acc = 0.2
+        loss, acc = model.evaluate(x_test, y_test)
         print('Accuracy {0}, FLOPS {1}, PARAMS {2}'.format(acc, flops, params))
         with open('train_history_pcnas.csv', mode='a+') as f:
             data = [acc, flops, params]
