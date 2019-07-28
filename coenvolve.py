@@ -135,6 +135,19 @@ def weightConcat(preference_a, preference_b, axis=0):
     preference_b = np.array(preference_b)
     return np.concatenate((preference_a, preference_b), axis=axis)
 
+def normalize(matrix):
+    # trival virable avoids nan
+    t_v = 0.00001
+    matrix_max, matrix_min = matrix.max(axis=0), matrix.min(axis=0)
+    matrix = (matrix - matrix_min) / (matrix_max + t_v - matrix_min)
+    return matrix
+
+def fitness_normalization(fits):
+    pn_fits = [fit for fit in fits]
+    matrix_fits = np.asarray(pn_fits)
+    matrix_fits = normalize(matrix_fits)
+    return list(map(tuple, matrix_fits))
+
 def coEnvolve(pop, toolbox, ngen, npreference, nobj, cxpb, mutpb, seed=None):
     random.seed(seed)
     MU = len(pop)
@@ -154,6 +167,7 @@ def coEnvolve(pop, toolbox, ngen, npreference, nobj, cxpb, mutpb, seed=None):
     # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in pop if not ind.fitness.valid]
     fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+    fitnesses = fitness_normalization(fitnesses)
     for ind, fit in zip(invalid_ind, fitnesses):
         ind.fitness.values = fit
 
@@ -173,6 +187,7 @@ def coEnvolve(pop, toolbox, ngen, npreference, nobj, cxpb, mutpb, seed=None):
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
         fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+        fitnesses = fitness_normalization(fitnesses)
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 
