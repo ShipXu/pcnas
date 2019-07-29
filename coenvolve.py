@@ -8,7 +8,7 @@ from deap import base, tools, algorithms
 from deap.tools.emo import assignCrowdingDist
 
 def get_utility(fit, preference):
-    wf = np.array(fit.wvalues)
+    wf = np.array(fit)
     assert(wf.shape[0]==preference.shape[1])
     return np.dot(wf, preference.transpose())
 
@@ -21,10 +21,12 @@ def sortIndividual(individuals, preferences, k, first_front_only=False):
     if k == 0:
         return []
 
+    fits = [ind.fitness.wvalues for ind in individuals]
+    fits = fitness_normalization(fits)
     map_fit_ind = defaultdict(list)
-    for ind in individuals:
-        map_fit_ind[ind.fitness].append(ind)
-    fits = list(map_fit_ind.keys())
+
+    for fit, ind in zip(fits, individuals):
+        map_fit_ind[fit].append(ind)
 
     current_front = []
     next_front = []
@@ -167,7 +169,6 @@ def coEnvolve(pop, toolbox, ngen, npreference, nobj, cxpb, mutpb, seed=None):
     # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in pop if not ind.fitness.valid]
     fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-    fitnesses = fitness_normalization(fitnesses)
     for ind, fit in zip(invalid_ind, fitnesses):
         ind.fitness.values = fit
 
@@ -187,7 +188,6 @@ def coEnvolve(pop, toolbox, ngen, npreference, nobj, cxpb, mutpb, seed=None):
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
         fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-        fitnesses = fitness_normalization(fitnesses)
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 
