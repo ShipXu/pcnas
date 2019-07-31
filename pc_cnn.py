@@ -33,7 +33,7 @@ for nn in NUM_NODES:
     L += t
 L = int(0.5 * L)
 
-TRAINING_EPOCHS = 1
+TRAINING_EPOCHS = 20
 BATCH_SIZE = 20
 
 import csv
@@ -57,6 +57,7 @@ def evaluateModel(individual, dataset):
         print('Accuracy {0}, FLOPS {1}, PARAMS {2}'.format(acc, flops, params))
         with open('train_history_pcnas.csv', mode='a+') as f:
             data = [acc, flops, params]
+            data.append(str(individual))
             writer = csv.writer(f)
             writer.writerow(data)
         return acc, flops, params
