@@ -54,6 +54,7 @@ def evaluateModel(individual, dataset):
 
         # evaluate the model
         loss, acc = model.evaluate(x_test, y_test)
+        acc = 0.2
         print('Accuracy {0}, FLOPS {1}, PARAMS {2}'.format(acc, flops, params))
         with open('train_history_pcnas.csv', mode='a+') as f:
             data = [acc, flops, params]
@@ -66,8 +67,8 @@ population_size = 20
 num_generations = 3
 PRESIZE=20
 NOBJ=3
-CXPB=0.9
-MUTPB=0.9
+CXPB=0.1
+MUTPB=0.4
 
 dataset = get_mnist()
 creator.create("FitnessMax", base.Fitness, weights=(1.0, -1.0, -1.0))
@@ -85,4 +86,7 @@ toolbox.register("evaluate", lambda individual : evaluateModel(individual, datas
 
 pop = toolbox.population(n=population_size)
 pop, stats = coEnvolve(pop, toolbox, ngen=num_generations, npreference=PRESIZE, nobj=NOBJ, cxpb=CXPB, mutpb=MUTPB, seed=None)
-print(stats)
+with open('pc_cnn_result.txt', 'w') as f:
+    for ind in pop:
+        f.write(str(ind))
+        f.write('\n')
