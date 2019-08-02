@@ -84,7 +84,14 @@ toolbox.register("select", coSelect)
 toolbox.register("evaluate", lambda individual : evaluateModel(individual, dataset=dataset))
 
 pop = toolbox.population(n=population_size)
+
+from time import time
+start = time()
+print("Start: " + str(start))
 pop, stats = coEnvolve(pop, toolbox, ngen=num_generations, npreference=PRESIZE, nobj=NOBJ, cxpb=CXPB, mutpb=MUTPB, seed=None)
+print("Stop: " + str(stop))
+print("search Time = {}".format(stop -start))
+
 with open('pc_cnn_result.txt', 'w') as f:
     for ind in pop:
         f.write(str(ind))

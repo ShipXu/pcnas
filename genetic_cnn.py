@@ -87,7 +87,12 @@ stats.register("std", np.std, axis=0)
 stats.register("min", np.min, axis=0)
 stats.register("max", np.max, axis=0)
 
+from time import time
+start = time()
+print("Start: " + str(start))
 result, logbook = algorithms.eaSimple(popl, toolbox, stats=stats, cxpb = 0.4, mutpb = 0.05, ngen = num_generations, verbose = True)
+print("Stop: " + str(stop))
+print("search Time = {}".format(stop -start))
 with open('geneticcnn_result.txt', 'w') as f:
     for ind in result:
         f.write(str(ind))
