@@ -54,7 +54,6 @@ def evaluateModel(individual, dataset):
 
         # evaluate the model
         loss, acc = model.evaluate(x_test, y_test)
-        acc = 0.2
         print('Accuracy {0}, FLOPS {1}, PARAMS {2}'.format(acc, flops, params))
         with open('train_history_pcnas.csv', mode='a+') as f:
             data = [acc, flops, params]
