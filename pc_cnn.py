@@ -12,6 +12,9 @@ from scipy.stats import bernoulli
 from coenvolve import coSelect, coEnvolve
 
 import os
+def if_exists(filepath):
+    return os.path.exists(filepath)
+
 def remove_files():
     files = ['train_history_pcnas.csv']
 
@@ -19,7 +22,14 @@ def remove_files():
         if os.path.exists(file):
             os.remove(file)
 
+def create_dirs():
+    dirs = ['experiment_data', 'model_visulization']
+    for dir in dirs:
+        if not if_exists(dir):
+            os.makedirs(dir)
+
 remove_files()
+create_dirs()
 
 STAGES = np.array(["s1", "s2"])  # S
 NUM_NODES = np.array([3, 5])  # K
@@ -37,6 +47,7 @@ TRAINING_EPOCHS = 20
 BATCH_SIZE = 20
 
 import csv
+from keras.utils import plot_model
 def evaluateModel(individual, dataset):
     print(individual)
     score = 0.0
@@ -47,6 +58,9 @@ def evaluateModel(individual, dataset):
         graph = network_sess.graph
         params = evaluate_params(graph)
         flops = evaluate_flops(graph)
+        plot_model(model,
+                   to_file='model_visulization/model_{0}.png'.format(str(individual)),
+                   show_shapes=True, show_layer_names=True, rankdir='TB')
         model.compile('adam', 'categorical_crossentropy', metrics=['accuracy'])
 
         # train the model using Keras methods
@@ -55,7 +69,7 @@ def evaluateModel(individual, dataset):
         # evaluate the model
         loss, acc = model.evaluate(x_test, y_test)
         print('Accuracy {0}, FLOPS {1}, PARAMS {2}'.format(acc, flops, params))
-        with open('train_history_pcnas.csv', mode='a+') as f:
+        with open('experiment_data/train_history_pcnas.csv', mode='a+') as f:
             data = [acc, flops, params]
             data.append(str(individual))
             writer = csv.writer(f)
@@ -87,12 +101,11 @@ pop = toolbox.population(n=population_size)
 
 from time import time
 start = time()
-print("Start: " + str(start))
 pop, stats = coEnvolve(pop, toolbox, ngen=num_generations, npreference=PRESIZE, nobj=NOBJ, cxpb=CXPB, mutpb=MUTPB, seed=None)
-print("Stop: " + str(stop))
-print("search Time = {}".format(stop -start))
+stop = time()
+print("search Time = {}s".format(stop -start))
 
-with open('pc_cnn_result.txt', 'w') as f:
+with open('experiment_data/pc_cnn_result.txt', 'w') as f:
     for ind in pop:
         f.write(str(ind))
         f.write('\n')
