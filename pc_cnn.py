@@ -16,14 +16,14 @@ def if_exists(filepath):
     return os.path.exists(filepath)
 
 def remove_files():
-    files = ['train_history_pcnas.csv']
+    files = ['experiment_data/pc_cnn/pcnas.csv']
 
     for file in files:
         if os.path.exists(file):
             os.remove(file)
 
 def create_dirs():
-    dirs = ['experiment_data', 'model_visulization']
+    dirs = ['experiment_data', 'model_visulization', 'experiment_data/pc_cnn', 'model_visulization/pc_cnn']
     for dir in dirs:
         if not if_exists(dir):
             os.makedirs(dir)
@@ -50,7 +50,6 @@ import csv
 from keras.utils import plot_model
 def evaluateModel(individual, dataset):
     print(individual)
-    score = 0.0
     ((x_train, y_train), (x_test, y_test)) = dataset
     with tf.Session(graph=tf.Graph()) as network_sess:
         K.set_session(network_sess)
@@ -59,7 +58,7 @@ def evaluateModel(individual, dataset):
         params = evaluate_params(graph)
         flops = evaluate_flops(graph)
         plot_model(model,
-                   to_file='model_visulization/model_{0}.png'.format(str(individual)),
+                   to_file='model_visulization/pc_cnn/model_{0}.png'.format(str(individual)),
                    show_shapes=True, show_layer_names=True, rankdir='TB')
         model.compile('adam', 'categorical_crossentropy', metrics=['accuracy'])
 
@@ -69,7 +68,7 @@ def evaluateModel(individual, dataset):
         # evaluate the model
         loss, acc = model.evaluate(x_test, y_test)
         print('Accuracy {0}, FLOPS {1}, PARAMS {2}'.format(acc, flops, params))
-        with open('experiment_data/train_history_pcnas.csv', mode='a+') as f:
+        with open('experiment_data/pc_cnn/pcnas.csv', mode='a+') as f:
             data = [acc, flops, params]
             data.append(str(individual))
             writer = csv.writer(f)
